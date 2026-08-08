@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう！ level9</title>
+	<style>
+		main {
+			margin: 0 auto;
+			width: 1240px;
+			height: 400px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			color: #fff;
+			margin: 50px auto;
+		}
+
+		button:first-of-type {
+			background-color: rgb(11, 117, 59);
+		}
+
+		button:nth-of-type(2) {
+			background-color: rgb(117, 11, 99);
+		}
+
+		/*JSで文字色を付けるので文字色に関するstyle削除*/
+	</style>
+	<script>
+		//リファクタリングをしよう！ その２
+		/*
+			機能としては大体完成しましたが、更にメンテナンス性や拡張性をあげていきましょう。
+
+			まずはガチャの基本機能を拡張しましょう。
+			・レアなどの当たりの確率を変えたい場合設定しやすいようにしてみましょう。
+			（例　スーパーレアの当たり確率を5%に変更したい　等）
+			・カード、レア度の種類が増えた場合設定を変更しやすいようにしましょう。
+			(例　ウルトラレアというレアの種類が増えた時、スーパーレアのカードが６枚に増えた時　等)
+			・レア度ごとの文字色を変更しやすいようにしてみましょう。
+			（例　スーパーレアの文字色を紫にする時　等）
+	
+			天井、確率操作機能はあとで分離するので、今回は一旦外してしまって大丈夫です。
+		*/
+
+		//max~minまでの数字を生成する関数
+		function makeRandomNumber(min, max) {
+			return Math.floor(Math.random() * (max + 1 - min)) + min;
+		}
+
+		/*カードの設定をオブジェクトに、ここを編集するだけで設定を変えられるようにする。
+		表示名、排出率、カード枚数、出力時の文字色を設定*/
+		cardPropaty = {
+			sRare: { name: "スーパーレア", probability: 3, cardKind: 5, color: "orange" },
+			rare: { name: "レア", probability: 10, cardKind: 25, color: "red" },
+			//上記以外の出力結果だった場合はノーマルにするので、ノーマルprobabilityの値は設定しない
+			nomal: { name: "ノーマル", probability: "", cardKind: 70, color: "blue" },
+		}
+
+		//オブジェクトに設定された確率を元にどのレアが排出されたかを返してくれる関数
+		function makeRareResult(object) {
+			let rand = makeRandomNumber(100, 1);
+			//設定した確率が正しいかを確認
+			//実際に出力された数字を確認
+			//console.log(rand);
+			/*
+				エラーのもとになりやすい境界値付近の数字を入れて確認
+				例　スーパーレア3%　レア10%の場合
+				randの数字が1~3ならばスーパーレア、4~13ならばレア
+				境界値である,1,3,4,13,14を実際入力して確認してみる
+			*/
+			//rand = 14;
+
+			let rate = 0;
+			//ノーマルには確率が設定されていないので、ifの判定結果に引っかからない場合nomalを返すように初期値として設定
+			let rareName = "nomal";
+			for (let i in object) {
+				rate += object[i]["probability"];
+				if (rand <= rate) {
+					rareName = i;
+					break;
+				}
+			}
+			//オブジェクトのレア名が返ってくる
+			return rareName;
+		}
+
+		//カードの種類と枚数に応じてカードナンバーを生成してくれる関数
+		function makeCardNumber(object) {
+			let max = 0;
+			let min = 0;
+			let cardObject = {}
+			for (let i in object) {
+				min = max + 1;
+				max += object[i]["cardKind"];
+				cardObject[i] = { min: min, max: max };
+			}
+			//レア名にカードのmax、minの値を入れた配列が返ってくる
+			return cardObject;
+		}
+
+		//上記2関数を使用し結果のオブジェクトを生成する関数
+		function makeResultObject(object) {
+			//カード番号を生成
+			let cardObject = makeCardNumber(object);
+			//ガチャ結果を生成
+			let rareResult = makeRareResult(object);
+			//ガチャ結果から排出されたカードの番号を決定
+			let cardNumber = makeRandomNumber(cardObject[rareResult]["min"], cardObject[rareResult]["max"]);
+			//生成された結果から新たにオブジェクトを生成
+			let resultObject = { name: cardPropaty[rareResult]["name"], cardNumber: cardNumber, color: cardPropaty[rareResult]["color"], };
+
+			return resultObject;
+		}
+
+		//クリックイベント、ガチャの結果から出力するイベントに関する関数、ガチャの種類を引数に設定することで出力結果を変えられる
+		function gachaFunction(object, gachaType) {
+			//出力先を指定
+			let outputElement = document.querySelector("p");
+			outputElement.innerHTML = "";
+			//ガチャのタイプによって出力結果を指定
+			if (gachaType == "nomal") {
+				//ガチャ結果を生成
+				let result = makeResultObject(object);
+				//出力テキスト生成
+				let text = `<span class="result">${result["name"]}&nbsp${result["cardNumber"]}番のカード</span>`;
+				outputElement.innerHTML = text;
+				document.querySelector(".result").style.color = result["color"];
+
+			}
+			else if (gachaType == "10roll") {
+				for (i = 1; i <= 10; i++) {
+					//ガチャ結果を生成
+					let result = makeResultObject(object);
+					let text = `「${i}.<span class="result${i}">${result["name"]}&nbsp${result["cardNumber"]}番のカード</span>」`;
+					outputElement.innerHTML += text;
+					document.querySelector(`.result${i}`).style.color = result["color"];
+					if (i == 5) {
+						outputElement.innerHTML += "<br>";
+					}
+				}
+			}
+		}
+
+		onload = () => {
+			document.querySelectorAll("button")[0].addEventListener("click", () => {
+				gachaFunction(cardPropaty, "nomal");
+			})
+			document.querySelectorAll("button")[1].addEventListener("click", () => {
+				gachaFunction(cardPropaty, "10roll");
+			})
+		}
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+		<button>10連ガチャを引く</button>
+
+	</main>
+</body>
+
+</html>

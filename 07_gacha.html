@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう！ level7</title>
+	<style>
+		main {
+			margin: 0 auto;
+			width: 1240px;
+			height: 400px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			color: #fff;
+			margin: 50px auto;
+		}
+
+		button:first-of-type {
+			background-color: rgb(11, 117, 59);
+		}
+
+		button:nth-of-type(2) {
+			background-color: rgb(117, 11, 99);
+		}
+
+		.srare {
+			color: orange;
+		}
+
+		.rare {
+			color: red;
+		}
+
+		.nomal {
+			color: blue;
+		}
+	</style>
+	<script>
+		//確率操作をしよう！（あくまで練習のための課題なので現場でこのような仕様を実装するのはやめましょう。。。）
+		/*
+			今度はスーパーレアが出やすくなりすぎてしまい、ユーザー課金額が大きく下がってしまいました。
+			いまさら天井を外すことは出来ないので設定を操作してスーパーレアの出現度を下げましょう。
+			スーパーレアが２枚でた後、必ずその後10回以内にはスーパーレアがでないようにして下さい。
+			10回以内にまたスーパーレアが出た場合は変わりにレアを出すようにして下さい。
+			天井で出たスーパーレアもこの仕様に含めます。
+		*/
+
+		onload = () => {
+			let buttonElements = document.querySelectorAll("button");
+			let output = document.querySelector("p");
+			let rareLimitFlag = false;
+			let rareLimitCount = 0;
+
+			//確率操作関係に使用する値
+			//確率操作フラグ
+			let cheatFlag = false;
+			//確率操作が発動するまでのカウント
+			let fromCheatCount = 0;
+			//確率操作終了までのカウント
+			let toCheatCount = 0;
+
+			buttonElements[0].addEventListener("click", () => {
+
+				output.innerHTML = "";
+				let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+				if (rareLimitFlag == false) {
+					//スーパーレアが出たらカウントアップ
+					if (rand <= 3) {
+						//スーパーレアが当たった時は確率操作フラグによって結果が分岐
+						if (cheatFlag == false) {
+							let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+							output.innerHTML = `<span class="srare">スーパーレア&nbsp${card}番のカード</span>`;
+							rareLimitFlag = false;
+							rareLimitCount = 0;
+							fromCheatCount++;
+						}
+						//確率操作フラグオンの場合はレアが出現
+						else {
+							let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+							output.innerHTML = `<span class="rare">レア&nbsp${card}番のカード</span>`;
+							rareLimitCount++;
+						}
+					}
+					else if (rand <= 13) {
+						let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+						output.innerHTML = `<span class="rare">レア&nbsp${card}番のカード</span>`;
+						rareLimitCount++;
+					}
+					else {
+						let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+						output.innerHTML = `<span class="nomal">ノーマル&nbsp${card}番のカード</span>`;
+						rareLimitCount++;
+					}
+				}
+				//スーパーレアが出たらカウントアップ
+				else {
+					let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+					output.innerHTML = `<span class="srare">スーパーレア&nbsp${card}番のカード</span>`;
+					rareLimitFlag = false;
+					rareLimitCount = 0;
+					fromCheatCount++;
+				}
+				if (rareLimitCount == 20) {
+					rareLimitFlag = true
+				}
+				//スーパーレア2枚でフラグオン
+				if (fromCheatCount == 2) {
+					cheatFlag = true;
+					fromCheatCount = 0;
+				}
+				//確率操作中にガチャを引いた場合チート終了までのカウントアップ
+				if (cheatFlag) {
+					toCheatCount++;
+				}
+				//終了カウント１０になった時点で確率操作フラグオフ
+				if (toCheatCount == 10) {
+					cheatFlag = false;
+					toCheatCount = 0;
+				}
+				console.log(rareLimitCount, rareLimitFlag, cheatFlag, fromCheatCount, toCheatCount);
+			})
+
+
+			buttonElements[1].addEventListener("click", () => {
+				output.innerHTML = "";
+				for (let i = 1; i <= 10; i++) {
+					if (rareLimitFlag == false) {
+						let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+						//スーパーレアが出たらカウントアップ
+						if (rand <= 3) {
+							if (rareLimitFlag == false) {
+								let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+								output.innerHTML += `「${i}.<span class ="srare">スーパーレア&nbsp${card}番のカード</span>」`;
+								rareLimitFlag = false;
+								rareLimitCount = 0;
+								fromCheatCount++;
+							}
+							else {
+								let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+								output.innerHTML += `「${i}.<span class ="rare">レア&nbsp${card}番のカード</span>」`;
+								rareLimitCount++;
+							}
+						}
+						else if (rand <= 13) {
+							let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+							output.innerHTML += `「${i}.<span class ="rare">レア&nbsp${card}番のカード</span>」`;
+							rareLimitCount++;
+						}
+						else {
+							let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+							output.innerHTML += `「${i}.<span class ="nomal">ノーマル&nbsp${card}番のカード</span>」`;
+							rareLimitCount++;
+						}
+
+					}
+
+					//スーパーレアが出たらカウントアップ
+					else {
+						let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+						output.innerHTML += `「${i}.<span class ="srare">スーパーレア&nbsp${card}番のカード</span>」`;
+						rareLimitFlag = false;
+						rareLimitCount = 0;
+						fromCheatCount++;
+					}
+					if (i == 5) {
+						output.innerHTML += "<br>";
+					}
+
+					if (rareLimitCount == 20) {
+						rareLimitFlag = true
+					}
+					if (fromCheatCount == 2) {
+						cheatFlag = true;
+						toCheatCount = 0;
+					}
+					//スーパーレア2枚でフラグオン
+					if (fromCheatCount == 2) {
+						cheatFlag = true;
+						fromCheatCount = 0;
+					}
+					//確率操作中にガチャを引いた場合チート終了までのカウントアップ
+					if (cheatFlag) [
+						toCheatCount++
+					]
+					//終了カウント１０になった時点で確率操作フラグオフ
+					if (toCheatCount == 10) {
+						cheatFlag = false;
+						toCheatCount = 0;
+					}
+					console.log(rareLimitCount, rareLimitFlag, cheatFlag, fromCheatCount, toCheatCount);
+				}
+			})
+		}
+
+
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+		<button>10連ガチャを引く</button>
+	</main>
+</body>
+
+</html>

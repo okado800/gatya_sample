@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう! level5</title>
+	<style>
+		main {
+			margin: 0 auto;
+			/*５回分が１行で収まるように横幅を広げる*/
+			width: 1240px;
+			height: 400px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			color: #fff;
+			margin: 50px auto;
+		}
+
+		button:first-of-type {
+			background-color: rgb(11, 117, 59);
+		}
+
+		button:nth-of-type(2) {
+			background-color: rgb(117, 11, 99);
+		}
+
+		/*ガチャ結果色分け用に追記したcss*/
+		.srare {
+			color: orange;
+		}
+
+		.rare {
+			color: red;
+		}
+
+		.nomal {
+			color: blue;
+		}
+	</style>
+
+	<script>
+
+		//見やすくしよう！
+
+		/*
+			画面やガチャの結果を見やすくするような工夫をしてみて下さい。
+			必要に応じてHTML/CSSの設定も変更してOKです。
+			ユーザーの画面の横幅は1240pxとします。
+		*/
+
+		//種類を見やすくするために色付け
+		onload = () => {
+			let buttonElements = document.querySelectorAll("button");
+			let output = document.querySelector("p");
+
+			buttonElements[0].addEventListener("click", () => {
+				output.innerHTML = "";
+				let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+				if (rand <= 3) {
+					let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+					output.innerHTML = `<span class="srare">スーパーレア&nbsp${card}番のカード</span>`;
+				}
+				else if (rand <= 13) {
+					let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+					output.innerHTML = `<span class="rare">レア&nbsp${card}番のカード</span>`;
+				}
+				else {
+					let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+					output.innerHTML = `<span class="nomal">ノーマル&nbsp${card}番のカード</span>`;
+				}
+			});
+
+			//見やすくするために「」で囲い、番号を付与
+			buttonElements[1].addEventListener("click", () => {
+				output.innerHTML = "";
+				for (let i = 1; i <= 10; i++) {
+					let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+					if (rand <= 3) {
+						let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+						output.innerHTML += `「${i}.<span class ="srare">スーパーレア&nbsp${card}番のカード</span>」`;
+					}
+					else if (rand <= 13) {
+						let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+						output.innerHTML += `「${i}.<span class ="rare">レア&nbsp${card}番のカード</span>」`;
+					}
+					else {
+						let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+						output.innerHTML += `「${i}.<span class ="nomal">ノーマル&nbsp${card}番のカード</span>」`;
+					}
+					//１行できっちり収まるように５回引いたら改行するように設定
+					if (i == 5) {
+						output.innerHTML += "<br>";
+					}
+				}
+			});
+		}
+
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+		<button>10連ガチャを引く</button>
+	</main>
+</body>
+
+</html>

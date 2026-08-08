@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう！ level8</title>
+	<style>
+		main {
+			margin: 0 auto;
+			width: 1240px;
+			height: 400px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			color: #fff;
+			margin: 50px auto;
+		}
+
+		button:first-of-type {
+			background-color: rgb(11, 117, 59);
+		}
+
+		button:nth-of-type(2) {
+			background-color: rgb(117, 11, 99);
+		}
+
+		.srare {
+			color: orange;
+		}
+
+		.rare {
+			color: red;
+		}
+
+		.nomal {
+			color: blue;
+		}
+	</style>
+	<script>
+		//リファクタリングをしよう！ その１
+		/*
+			記述が複雑になってきたので、一度リファクタリングをしましょう！
+			重複する機能をなるべくまとめて下さい。
+			08_gacha_memo.txtにリファクタリングを行う上で考えたことなどを書いてみて下さい。
+			例
+			○行目と○行目の記述が重複しているので関数化した。
+			全体の構造図をメモしてみた。等
+		*/
+
+		//max~minまでの数字を生成する関数
+		function makeRandomNumber(max, min) {
+			return Math.floor(Math.random() * (max + 1 - min)) + min;
+		}
+
+		//ガチャボタンを押したときの動作、レア度とカードの種類に関する関数
+		function gachaFunction(buttonType, gachaCount, rareLimitVal, cheatVal) {
+			//関数内で使用する値の設定
+			let rand = makeRandomNumber(100, 1);
+			let superRareText = `<span class="srare">スーパーレア&nbsp${makeRandomNumber(5, 1)}番のカード</span>`;
+			let rareText = `<span class="rare">レア&nbsp${makeRandomNumber(30, 6)}番のカード</span>`;
+			let nomalText = `<span class="nomal">ノーマル&nbsp${makeRandomNumber(100, 31)}番のカード</span>`;
+			//天井分岐
+			if (rareLimitVal.flag == false) {
+				//スーパーレア時処理
+				if (rand <= 3) {
+					//確率操作分岐
+					if (cheatVal.flag == false) {
+						outputFunction(buttonType, superRareText, gachaCount);
+						rareLimitVal.count = 0;
+						cheatVal["from"]++;
+					}
+					else {
+						outputFunction(buttonType, rareText, gachaCount);
+						rareLimitVal["count"]++;
+					}
+				}
+				//レア時処理
+				else if (rand <= 13) {
+					outputFunction(buttonType, rareText, gachaCount);
+					rareLimitVal["count"]++;
+				}
+				//ノーマル時処理
+				else {
+					outputFunction(buttonType, nomalText, gachaCount);
+					rareLimitVal["count"]++;
+				}
+			}
+			//天井時処理
+			else {
+				let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+				outputFunction(buttonType, superRareText, gachaCount);
+				rareLimitVal.flag = false;
+				rareLimitVal.count = 0;
+				cheatVal["from"]++;
+			}
+			//天井フラグ処理
+			if (rareLimitVal.count == 20) {
+				rareLimitVal.flag = true;
+			}
+			//確率操作フラグオン処理
+			if (cheatVal.from == 2) {
+				cheatVal.flag = true;
+				cheatVal.from = 0;
+			}
+			//確率操作フラグオン時共通処理（Sレア、レア、ノーマルどの場合であっても共通の処理）
+			if (cheatVal.flag) {
+				cheatVal["to"]++;
+			}
+			if (cheatVal.to == 10) {
+				cheatVal.flag = false;
+				cheatVal.to = 0;
+			}
+			console.log(rareLimitVal, cheatVal);
+		}
+
+		//出力結果の関数、通常か10連かで分岐
+		function outputFunction(buttonType, resultText, gachaCount) {
+			if (buttonType == "nomal") {
+				document.querySelector("p").innerHTML = resultText;
+			}
+			else if (buttonType == "10roll") {
+				document.querySelector("p").innerHTML += `「${gachaCount}.${resultText}」`;
+			}
+		}
+
+		onload = () => {
+			//天井機能を管理するための値を設定
+			rareLimitVal = {
+				flag: false,
+				count: 0
+			}
+			//確率操作機能を管理するための値を設定
+			cheatVal = {
+				flag: false,
+				from: 0,
+				to: 0
+			}
+
+			//通常ガチャ処理
+			document.querySelectorAll("button")[0].addEventListener("click", () => {
+				document.querySelector("p").innerHTML = "";
+				gachaFunction("nomal", "", rareLimitVal, cheatVal);
+			})
+			//10連ガチャ処理
+			document.querySelectorAll("button")[1].addEventListener("click", () => {
+				document.querySelector("p").innerHTML = "";
+				for (let i = 1; i <= 10; i++) {
+					gachaFunction("10roll", i, rareLimitVal, cheatVal);
+					if (i == 5) {
+						document.querySelector("p").innerHTML += "<br>";
+					}
+				}
+			})
+		}
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+		<button>10連ガチャを引く</button>
+	</main>
+</body>
+
+</html>

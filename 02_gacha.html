@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう！ level2</title>
+	<style>
+		main {
+			margin: 0 auto;
+			width: 900px;
+			height: 200px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			background-color: rgb(11, 117, 59);
+			color: #fff;
+			margin: 50px auto;
+		}
+	</style>
+	<script>
+		//ガチャを作ろう！
+		//ボタンを押したら3%の確率で「スーパーレア」、10%の確率で「レア」、その他の場合「ノーマル」とpタグに表示されるようなプログラムを作成して下さい。
+
+		onload = function () {
+			document.querySelectorAll("button")[0].addEventListener("click", function () {
+				//1~100までのランダムな整数を作成
+				let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+				//出力先を取得
+				let output = document.querySelector("p");
+				if (rand <= 3) {
+					output.innerHTML = "スーパーレア";
+				}
+				else if (rand <= 13) {
+					output.innerHTML = "レア";
+				}
+				else {
+					output.innerHTML = "ノーマル";
+				}
+			})
+
+		}
+
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+	</main>
+</body>
+
+</html>

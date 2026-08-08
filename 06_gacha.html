@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ガチャを作ろう！ level6</title>
+	<style>
+		main {
+			margin: 0 auto;
+			width: 1240px;
+			height: 400px;
+			margin-top: 5%;
+			border: black solid 1px;
+		}
+
+		p {
+			padding-top: 5%;
+			text-align: center;
+		}
+
+		button {
+			display: block;
+			width: 150px;
+			padding: 10px;
+			color: #fff;
+			margin: 50px auto;
+		}
+
+		button:first-of-type {
+			background-color: rgb(11, 117, 59);
+		}
+
+		button:nth-of-type(2) {
+			background-color: rgb(117, 11, 99);
+		}
+
+		.srare {
+			color: orange;
+		}
+
+		.rare {
+			color: red;
+		}
+
+		.nomal {
+			color: blue;
+		}
+	</style>
+	<script>
+		//天井を作ろう！
+		/*
+			スーパーレアの出る確率が低すぎるというユーザーの声が多数あるので天井を作りましょう。
+			２０回ガチャを引いてスーパーレアが１枚も出なかった場合21枚目で必ずスーパーレアが出るように設定して下さい。
+		*/
+
+
+		onload = () => {
+			let buttonElements = document.querySelectorAll("button")
+			let output = document.querySelector("p");
+			//天井関係に必要な値
+			//天井に達したかどうかの判定フラグ
+			let rareLimitFlag = false;
+			//天井までのカウントを数える変数
+			let rareLimitCount = 0;
+
+			//天井に達しているかどうかで分岐
+
+			buttonElements[0].addEventListener("click", () => {
+
+				output.innerHTML = "";
+				let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+				if (rareLimitFlag == false) {
+					//スーパーレアが出た場合フラグ消滅＆天井までのカウントを初期化
+					if (rand <= 3) {
+						let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+						output.innerHTML = `<span class="srare">スーパーレア&nbsp${card}番のカード</span>`;
+						rareLimitFlag = false;
+						rareLimitCount = 0;
+					}
+					//スーパーレア以外の場合天井までのカウントアップ
+					else if (rand <= 13) {
+						let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+						output.innerHTML = `<span class="rare">レア&nbsp${card}番のカード</span>`;
+						rareLimitCount++;
+					}
+					else {
+						let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+						output.innerHTML = `<span class="nomal">ノーマル&nbsp${card}番のカード</span>`;
+						rareLimitCount++;
+					}
+				}
+				//天井に達している場合の処理
+				else {
+					let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+					output.innerHTML = `<span class="srare">スーパーレア&nbsp${card}番のカード</span>`;
+					rareLimitFlag = false;
+					rareLimitCount = 0;
+				}
+				//カウント20になったら天井フラグをオンに
+				if (rareLimitCount == 20) {
+					rareLimitFlag = true
+				}
+				console.log(rareLimitCount);
+				console.log(rareLimitFlag);
+			})
+
+
+			buttonElements[1].addEventListener("click", () => {
+				output.innerHTML = "";
+				for (let i = 1; i <= 10; i++) {
+					//天井に達しているかどうかで分岐
+					if (rareLimitFlag == false) {
+						let rand = Math.floor(Math.random() * (100 + 1 - 1)) + 1;
+						if (rand <= 3) {
+							let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+							output.innerHTML += `「${i}.<span class ="srare">スーパーレア&nbsp${card}番のカード</span>」`;
+							rareLimitFlag = false;
+							rareLimitCount = 0;
+						}
+						else if (rand <= 13) {
+							let card = Math.floor(Math.random() * (30 + 1 - 6)) + 6;
+							output.innerHTML += `「${i}.<span class ="rare">レア&nbsp${card}番のカード</span>」`;
+							rareLimitCount++;
+						}
+						else {
+							let card = Math.floor(Math.random() * (100 + 1 - 31)) + 31;
+							output.innerHTML += `「${i}.<span class ="nomal">ノーマル&nbsp${card}番のカード</span>」`;
+							rareLimitCount++;
+						}
+
+					}
+
+					//天井に達している場合の処理
+					else {
+						let card = Math.floor(Math.random() * (5 + 1 - 1)) + 1;
+						output.innerHTML += `「${i}.<span class ="srare">スーパーレア&nbsp${card}番のカード</span>」`;
+						rareLimitFlag = false;
+						rareLimitCount = 0;
+					}
+					if (i == 5) {
+						output.innerHTML += "<br>";
+					}
+					//カウント20になったら天井フラグをオンに
+					if (rareLimitCount == 20) {
+						rareLimitFlag = true
+					}
+					console.log(rareLimitCount);
+					console.log(rareLimitFlag);
+				}
+			})
+		}
+
+
+	</script>
+</head>
+
+<body>
+	<main>
+		<p>出力結果</p>
+		<button>ガチャを引く</button>
+		<button>10連ガチャを引く</button>
+	</main>
+</body>
+
+</html>
